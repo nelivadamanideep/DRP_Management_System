@@ -25,10 +25,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Central security wiring.
  *
  * <ul>
- *   <li>Stateless, JWT-based authentication (see {@link JwtAuthenticationFilter}).</li>
- *   <li>Public endpoints: auth flows, swagger, actuator/health.</li>
- *   <li>Method-level {@code @PreAuthorize} enabled for RBAC on services and controllers.</li>
- *   <li>CORS origins are configurable via {@code erpms.security.allowed-origins}.</li>
+ * <li>Stateless, JWT-based authentication (see
+ * {@link JwtAuthenticationFilter}).</li>
+ * <li>Public endpoints: auth flows, swagger, actuator/health.</li>
+ * <li>Method-level {@code @PreAuthorize} enabled for RBAC on services and
+ * controllers.</li>
+ * <li>CORS origins are configurable via
+ * {@code erpms.security.allowed-origins}.</li>
  * </ul>
  */
 @Configuration
@@ -41,8 +44,7 @@ public class SecurityConfig {
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
-            @Value("${erpms.security.allowed-origins:http://localhost:5173,http://localhost:3000}") List<String> allowedOrigins
-    ) {
+            @Value("${erpms.security.allowed-origins:http://localhost:5173,http://localhost:3000}") List<String> allowedOrigins) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.allowedOrigins = allowedOrigins;
     }
@@ -55,26 +57,24 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                                "Authentication required"))
-                )
+                                "Authentication required")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/actuator/health",
-                                "/actuator/info"
-                        ).permitAll()
+                                "/actuator/info")
+                        .permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/auth/register",
                                 "/auth/login",
                                 "/auth/refresh",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
-                                "/auth/verify-otp"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                                "/auth/verify-otp")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -82,7 +82,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://192.168.*:*",
+                "https://*.onrender.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With"));
         config.setExposedHeaders(List.of("Content-Disposition"));
