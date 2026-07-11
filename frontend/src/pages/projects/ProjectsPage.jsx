@@ -22,19 +22,42 @@ const empty = {
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState(null);
+  const [departments, setDepartments] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(empty);
   const [submitting, setSubmitting] = useState(false);
 
-  const load = () => api.get('/projects').then((r) => setProjects(r.data));
-  useEffect(() => { load(); }, []);
+  const load = async () => {
+    try {
+      const [projectsRes, departmentsRes] = await Promise.all([
+        api.get('/projects'),
+        api.get('/departments'),
+      ]);
+
+      setProjects(projectsRes.data);
+      setDepartments(departmentsRes.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load data");
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
       await api.post('/projects', {
-        ...form,
+        projectCode: form.projectCode,
+        title: form.title,
+        summary: form.summary,
+        departmentId: form.departmentId,
+        priority: form.priority,
+        riskLevel: form.riskLevel,
+        status: form.status,
         plannedStartDate: form.plannedStartDate || null,
         plannedEndDate: form.plannedEndDate || null,
         approvedBudget: Number(form.approvedBudget || 0),
@@ -65,6 +88,30 @@ export default function ProjectsPage() {
           <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="project-form">
             <Field label="Project code"><input required className="field-input" value={form.projectCode} onChange={(e) => setForm({ ...form, projectCode: e.target.value })} /></Field>
             <Field label="Title"><input required className="field-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
+            <Field label="Department">
+              <select
+                required
+                className="field-input"
+                value={form.departmentId}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    departmentId: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select Department</option>
+
+                {departments.map((department) => (
+                  <option
+                    key={department.id}
+                    value={department.id}
+                  >
+                    {department.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
             <Field label="Priority">
               <select className="field-input" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}>
                 {['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map((v) => <option key={v}>{v}</option>)}
