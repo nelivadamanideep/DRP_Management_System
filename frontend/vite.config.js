@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      outDir: 'dist',
+      outDir: 'frontend/dist',
       sourcemap: true,
     },
   };
