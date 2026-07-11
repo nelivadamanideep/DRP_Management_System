@@ -10,7 +10,7 @@ spring:
     name: erpms-backend
 
   datasource:
-    url: jdbc:mysql://gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/erpms?sslMode=VERIFY_IDENTITY
+    url: mysql://Z6DxbNtU19EFn7p.root:HqWcUy0woXJwQivt@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/sys
     username: Z6DxbNtU19EFn7p.root
     password: HqWcUy0woXJwQivt
     driver-class-name: com.mysql.cj.jdbc.Driver
