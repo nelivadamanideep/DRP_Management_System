@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  @apply bg-ink-50 text-ink-900 font-sans antialiased;
+  background-image:
+    radial-gradient(1200px 600px at 100% -10%, rgba(226,178,61,0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 100%, rgba(91,138,90,0.14), transparent 60%);
+  background-attachment: fixed;
+}
+
+body.dark {
+  @apply bg-ink-900 text-ink-100;
+  background-image:
+    radial-gradient(1200px 600px at 100% -10%, rgba(226,178,61,0.14), transparent 60%),
+    radial-gradient(900px 500px at -10% 100%, rgba(91,138,90,0.18), transparent 60%),
+    linear-gradient(180deg, #0a0f22 0%, #0a0f22 100%);
+}
+
+.dark body { @apply bg-ink-900 text-ink-100; }
+
+/* Font utility */
+h1, h2, h3 { @apply font-display tracking-tight; }
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid theme('colors.accent.DEFAULT');
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(148,161,192,0.35);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(148,161,192,0.6); }
+
+@layer components {
+  .surface {
+    @apply bg-white/80 dark:bg-ink-800/70 backdrop-blur border border-ink-200/60 dark:border-ink-700/60 rounded-2xl shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ink-900 text-white hover:bg-ink-700 dark:bg-accent dark:text-ink-900 dark:hover:bg-accent-soft;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-ink-800 dark:text-ink-100 hover:bg-ink-100 dark:hover:bg-ink-800;
+  }
+  .btn-outline {
+    @apply btn border border-ink-300 dark:border-ink-600 text-ink-800 dark:text-ink-100 hover:border-ink-500;
+  }
+  .field-label {
+    @apply block text-xs uppercase tracking-widest text-ink-500 dark:text-ink-300 mb-1.5;
+  }
+  .field-input {
+    @apply w-full rounded-xl border border-ink-200 dark:border-ink-700 bg-white dark:bg-ink-800 px-4 py-2.5 text-sm text-ink-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-accent focus:ring-2 focus:ring-accent/30 transition-colors;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+  }
+  .table-th {
+    @apply text-[11px] uppercase tracking-widest text-ink-500 dark:text-ink-300 py-3 px-4 text-left border-b border-ink-200 dark:border-ink-700;
+  }
+  .table-td {
+    @apply py-3 px-4 text-sm border-b border-ink-100 dark:border-ink-800;
+  }
+}

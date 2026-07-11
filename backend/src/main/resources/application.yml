@@ -1,0 +1,110 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: erpms-backend
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/erpms?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:erpms}
+    password: ${SPRING_DATASOURCE_PASSWORD:erpms_dev_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 4
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_DDL_AUTO:update}
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          time_zone: UTC
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
+
+  mail:
+    host: ${SPRING_MAIL_HOST:}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  application:
+    name: ${spring.application.name}
+    version: 1.0.0
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.erpms: INFO
+    org.hibernate.SQL: WARN
+
+erpms:
+  security:
+    jwt-secret: ${ERPMS_JWT_SECRET:change-this-local-development-secret-change-this-please}
+    access-token-ttl: ${ERPMS_ACCESS_TTL:PT1H}
+    refresh-token-ttl: ${ERPMS_REFRESH_TTL:P7D}
+    allowed-origins: ${ERPMS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,http://localhost}
+    reveal-otp-in-response: ${ERPMS_REVEAL_OTP:true}
+
+  bootstrap:
+    admin-email: ${ERPMS_ADMIN_EMAIL:admin@example.com}
+    admin-password: ${ERPMS_ADMIN_PASSWORD:Admin12345}
+    admin-full-name: ${ERPMS_ADMIN_NAME:Platform Administrator}
+
+  storage:
+    local-root: ${ERPMS_STORAGE_ROOT:/var/lib/erpms/storage}
+
+  mail:
+    from: ${ERPMS_MAIL_FROM:no-reply@erpms.local}
+    enabled: ${ERPMS_MAIL_ENABLED:false}
+
+  ai:
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:}
+      base-url: ${ANTHROPIC_BASE_URL:https://api.anthropic.com}
+      model: ${ANTHROPIC_MODEL:claude-sonnet-4-5-20250929}
+      max-tokens: ${ANTHROPIC_MAX_TOKENS:2048}
+      version: 2023-06-01
+      timeout-seconds: 60

@@ -1,0 +1,65 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: erpms-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-erpms}
+      MYSQL_USER: ${MYSQL_USER:-erpms}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-erpms_dev_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root_dev_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ./backend
+    container_name: erpms-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-erpms}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-erpms}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-erpms_dev_password}
+      SPRING_JPA_DDL_AUTO: update
+      ERPMS_JWT_SECRET: ${ERPMS_JWT_SECRET:-change-this-local-development-secret-change-this-please}
+      ERPMS_ADMIN_EMAIL: ${ERPMS_ADMIN_EMAIL:-admin@example.com}
+      ERPMS_ADMIN_PASSWORD: ${ERPMS_ADMIN_PASSWORD:-Admin12345}
+      ERPMS_ALLOWED_ORIGINS: ${ERPMS_ALLOWED_ORIGINS:-http://localhost,http://localhost:5173}
+      ERPMS_STORAGE_ROOT: /var/lib/erpms/storage
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-5-20250929}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      ERPMS_MAIL_ENABLED: ${ERPMS_MAIL_ENABLED:-false}
+      ERPMS_MAIL_FROM: ${ERPMS_MAIL_FROM:-no-reply@erpms.local}
+    ports:
+      - "8080:8080"
+    volumes:
+      - erpms_storage:/var/lib/erpms/storage
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: erpms-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
+  erpms_storage:
