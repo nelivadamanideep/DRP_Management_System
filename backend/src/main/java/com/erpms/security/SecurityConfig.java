@@ -56,8 +56,22 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                                "Authentication required")))
+                  .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+
+                    String message = authException.getMessage();
+                    if (message == null || message.isBlank()) {
+                      message = "Authentication required";
+                    }
+
+                    response.getWriter().write("""
+                    {
+                       "message": "%s"
+                    }
+                    """.formatted(message));
+                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/swagger-ui/**",
