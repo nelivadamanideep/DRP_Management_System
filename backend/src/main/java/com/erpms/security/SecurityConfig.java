@@ -87,7 +87,7 @@ public class SecurityConfig {
                                 "/auth/reset-password",
                                 "/auth/verify-otp")
                         .permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
