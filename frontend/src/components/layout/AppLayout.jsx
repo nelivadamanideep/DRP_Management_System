@@ -59,10 +59,10 @@ export function AppLayout() {
       <aside className="hidden md:flex md:w-72 flex-col border-r border-ink-200/70 dark:border-ink-700/70 bg-white/70 dark:bg-ink-900/60 backdrop-blur px-6 py-8">
         <div className="flex items-center gap-3 pb-8">
           <div className="h-10 w-10 rounded-2xl bg-ink-900 dark:bg-accent grid place-items-center text-white dark:text-ink-900 font-display font-bold text-lg">
-            E
+            D
           </div>
           <div>
-            <div className="font-display text-lg leading-tight">ERPMS</div>
+            <div className="font-display text-lg leading-tight">DRPMS</div>
             <div className="text-[11px] tracking-widest uppercase text-ink-500 dark:text-ink-300">
               Research Platform
             </div>
