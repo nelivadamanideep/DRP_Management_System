@@ -49,48 +49,52 @@ public class SecurityConfig {
                 this.allowedOrigins = allowedOrigins;
         }
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex
-                  .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
+        @Bean
+        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                return http
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint((request, response, authException) -> {
+                                                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                                        response.setContentType("application/json");
+                                                        response.setCharacterEncoding("UTF-8");
 
-                    String message = authException.getMessage();
-                    if (message == null || message.isBlank()) {
-                       message = "Authentication required";
-                    }
+                                                        String message = authException.getMessage();
+                                                        if (message == null || message.isBlank()) {
+                                                                message = "Authentication required";
+                                                        }
 
-                    response.getWriter().write("""
-                    {
-                         "message": "%s"
-                    }
-                    """.formatted(message));
-                    }))
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/actuator/health",
-                                "/actuator/info")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.POST,
-                                "/auth/register",
-                                "/auth/login",
-                                "/auth/refresh",
-                                "/auth/forgot-password",
-                                "/auth/reset-password",
-                                "/auth/verify-otp")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+                                                        response.getWriter().write("""
+                                                                        {
+                                                                          "message": "%s"
+                                                                        }
+                                                                        """.formatted(message));
+                                                }))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html",
+                                                                "/v3/api-docs/**",
+                                                                "/actuator/health",
+                                                                "/actuator/info")
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                HttpMethod.POST,
+                                                                "/auth/register",
+                                                                "/auth/login",
+                                                                "/auth/refresh",
+                                                                "/auth/forgot-password",
+                                                                "/auth/reset-password",
+                                                                "/auth/verify-otp")
+                                                .permitAll()
+                                                .anyRequest()
+                                                .authenticated())
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .build();
+        }
 
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
