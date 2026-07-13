@@ -10,7 +10,7 @@ export function AuthShell({ eyebrow, title, subtitle, children, footer }) {
         <div className="absolute -top-40 -left-40 h-[420px] w-[420px] rounded-full bg-moss/30 blur-3xl" />
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-accent grid place-items-center text-ink-900 font-display font-bold text-lg">
+            <div className="h-14 w-16 rounded-2xl bg-accent grid place-items-center text-ink-900 font-display font-bold text-x1">
               DRDO
             </div>
             <div>
