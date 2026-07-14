@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -23,6 +24,34 @@ export default function InventoryPage() {
   const createItem = async (e) => { e.preventDefault(); try { await api.post('/inventory/items', itemForm); toast.success('Item added'); load(); } catch {} };
   const createSupplier = async (e) => { e.preventDefault(); try { await api.post('/inventory/suppliers', supplierForm); toast.success('Supplier added'); load(); } catch {} };
   const createWarehouse = async (e) => { e.preventDefault(); try { await api.post('/inventory/warehouses', warehouseForm); toast.success('Warehouse added'); load(); } catch {} };
+
+  const deleteItem = async (itemId) => {
+    try {
+      await api.delete(`/inventory/items/${itemId}`);
+      setItems(items.filter(i => i.id !== itemId));
+      toast.success('Item deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete item');
+    }
+  };
+  const deleteSupplier = async (supplierId) => {
+    try {
+      await api.delete(`/inventory/suppliers/${supplierId}`);
+      setSuppliers(suppliers.filter(s => s.id !== supplierId));
+      toast.success('Supplier deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete supplier');
+    }
+  };
+  const deleteWarehouse = async (warehouseId) => {
+    try {
+      await api.delete(`/inventory/warehouses/${warehouseId}`);
+      setWarehouses(warehouses.filter(w => w.id !== warehouseId));
+      toast.success('Warehouse deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete warehouse');
+    }
+  };
 
   return (
     <>
@@ -59,7 +88,7 @@ export default function InventoryPage() {
             <Section title="Items">
               <table className="min-w-full"><thead><tr>
                 <th className="table-th">SKU</th><th className="table-th">Name</th><th className="table-th">Stock</th>
-                <th className="table-th">Reorder</th><th className="table-th">Cost</th><th className="table-th">Alert</th>
+                <th className="table-th">Reorder</th><th className="table-th">Cost</th><th className="table-th">Alert</th><th className="table-th">Actions</th>
               </tr></thead><tbody>
                 {items.map((i) => (
                   <tr key={i.id}>
@@ -69,6 +98,7 @@ export default function InventoryPage() {
                     <td className="table-td">{i.reorderLevel}</td>
                     <td className="table-td">₹ {Number(i.unitCost).toLocaleString('en-IN')}</td>
                     <td className="table-td">{i.lowStock ? '⚠️ Low' : '✅'}</td>
+                    <td className="table-td"><button onClick={() => deleteItem(i.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></td>
                   </tr>
                 ))}
               </tbody></table>
@@ -90,7 +120,7 @@ export default function InventoryPage() {
           </Section>
           <Section title="Suppliers">
             <ul className="text-sm space-y-2">
-              {suppliers.map((s) => <li key={s.id} className="py-2 border-b border-ink-100 dark:border-ink-800 flex justify-between"><span>{s.name}</span><span className="text-ink-500 dark:text-ink-300">{s.contactEmail || '—'}</span></li>)}
+              {suppliers.map((s) => <li key={s.id} className="py-2 border-b border-ink-100 dark:border-ink-800 flex justify-between items-center"><div><span>{s.name}</span><span className="text-ink-500 dark:text-ink-300 ml-4">{s.contactEmail || '—'}</span></div><button onClick={() => deleteSupplier(s.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></li>)}
             </ul>
           </Section>
         </>
@@ -108,7 +138,7 @@ export default function InventoryPage() {
           </Section>
           <Section title="Warehouses">
             <ul className="text-sm space-y-2">
-              {warehouses.map((w) => <li key={w.id} className="py-2 border-b border-ink-100 dark:border-ink-800 flex justify-between"><span className="font-mono">{w.code}</span><span>{w.name}</span></li>)}
+              {warehouses.map((w) => <li key={w.id} className="py-2 border-b border-ink-100 dark:border-ink-800 flex justify-between items-center"><div><span className="font-mono">{w.code}</span><span className="ml-4">{w.name}</span></div><button onClick={() => deleteWarehouse(w.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></li>)}
             </ul>
           </Section>
         </>
