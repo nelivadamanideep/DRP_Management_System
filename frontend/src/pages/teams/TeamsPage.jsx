@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AddCircleOutline } from '@mui/icons-material';
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -22,6 +22,16 @@ export default function TeamsPage() {
     e.preventDefault();
     try { await api.post('/project-teams', form); toast.success('Assigned'); load(); }
     catch {}
+  };
+
+  const deleteTeam = async (teamId) => {
+    try {
+      await api.delete(`/project-teams/${teamId}`);
+      setRows(rows.filter(t => t.id !== teamId));
+      toast.success('Team member removed successfully');
+    } catch (error) {
+      toast.error('Failed to remove team member');
+    }
   };
 
   return (
@@ -48,7 +58,7 @@ export default function TeamsPage() {
       {!rows ? <LoadingState /> : (
         <Section title="Assignments">
           <table className="min-w-full">
-            <thead><tr><th className="table-th">Project</th><th className="table-th">User</th><th className="table-th">Role</th><th className="table-th">Allocation</th><th className="table-th">Active</th></tr></thead>
+            <thead><tr><th className="table-th">Project</th><th className="table-th">User</th><th className="table-th">Role</th><th className="table-th">Allocation</th><th className="table-th">Active</th><th className="table-th">Actions</th></tr></thead>
             <tbody>
               {rows.map((t) => (
                 <tr key={t.id}>
@@ -57,6 +67,7 @@ export default function TeamsPage() {
                   <td className="table-td">{t.roleInProject}</td>
                   <td className="table-td">{t.allocationPercent}%</td>
                   <td className="table-td">{t.active ? '✅' : '—'}</td>
+                  <td className="table-td"><button onClick={() => deleteTeam(t.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></td>
                 </tr>
               ))}
             </tbody>
