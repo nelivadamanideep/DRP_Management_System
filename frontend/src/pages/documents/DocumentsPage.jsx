@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Download } from '@mui/icons-material';
+import { Download, DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -41,6 +41,16 @@ export default function DocumentsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const deleteDocument = async (docId) => {
+    try {
+      await api.delete(`/documents/${docId}`);
+      setDocuments(documents.filter(d => d.id !== docId));
+      toast.success('Document deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete document');
+    }
+  };
+
   return (
     <>
       <PageHeader subtitle="Library" title="Document management" />
@@ -79,12 +89,13 @@ export default function DocumentsPage() {
                   <td className="table-td text-xs">{d.documentType}</td>
                   <td className="table-td text-xs">{d.status}</td>
                   <td className="table-td">{d.confidential ? '🔒' : '—'}</td>
-                  <td className="table-td">
+                  <td className="table-td flex gap-2">
                     {d.currentVersionId && (
                       <button className="btn-outline text-xs" onClick={() => download(d.id)}>
                         <Download fontSize="small" />Download
                       </button>
                     )}
+                    <button onClick={() => deleteDocument(d.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button>
                   </td>
                 </tr>
               ))}
