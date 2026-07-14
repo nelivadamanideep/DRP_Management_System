@@ -5,27 +5,27 @@ const PhotoCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [autoScroll, setAutoScroll] = useState(true);
 
-  // Placeholder images - replace with your actual image URLs
+  // Images from /frontend/images folder
   const photos = [
     {
       id: 1,
-      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-      title: 'Team Collaboration',
+      url: '/images/dashboard.jpg',
+      title: 'Dashboard',
     },
     {
       id: 2,
-      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-      title: 'Project Planning',
+      url: '/images/AD1.jpg',
+      title: 'Air Defense',
     },
     {
       id: 3,
-      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-      title: 'Team Meeting',
+      url: '/images/hypersonic_missile.jpg',
+      title: 'Hypersonic Missile',
     },
     {
       id: 4,
-      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop',
-      title: 'Success',
+      url: '/images/command.jpg',
+      title: 'Command Center',
     },
   ];
 
@@ -58,7 +58,7 @@ const PhotoCarousel = () => {
     <div className="w-full">
       <div className="relative w-full rounded-lg overflow-hidden bg-gray-900 shadow-lg group">
         {/* Main Carousel */}
-        <div className="relative h-80 md:h-96">
+        <div className="relative h-96 md:h-[500px]">
           {photos.map((photo, index) => (
             <div
               key={photo.id}
