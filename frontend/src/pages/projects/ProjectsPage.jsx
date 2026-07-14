@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AddCircleOutline } from '@mui/icons-material';
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -68,6 +68,16 @@ export default function ProjectsPage() {
       load();
     } catch { /* handled */ }
     finally { setSubmitting(false); }
+  };
+
+  const deleteProject = async (projectId) => {
+    try {
+      await api.delete(`/projects/${projectId}`);
+      setProjects(projects.filter(p => p.id !== projectId));
+      toast.success('Project deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete project');
+    }
   };
 
   return (
@@ -172,7 +182,7 @@ export default function ProjectsPage() {
                     <td className="table-td">{p.riskLevel}</td>
                     <td className="table-td"><StatusChip value={p.status} palette={STATUS_PALETTE} /></td>
                     <td className="table-td">₹ {Number(p.approvedBudget).toLocaleString('en-IN')}</td>
-                    <td className="table-td"><Link to={`/projects/${p.id}`} className="btn-outline text-xs">Open</Link></td>
+                    <td className="table-td flex gap-2"><Link to={`/projects/${p.id}`} className="btn-outline text-xs">Open</Link><button onClick={() => deleteProject(p.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></td>
                   </tr>
                 ))}
               </tbody>
