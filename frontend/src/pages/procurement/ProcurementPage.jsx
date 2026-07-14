@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -31,6 +32,24 @@ export default function ProcurementPage() {
   };
   const approve = async (id) => { try { await api.post(`/procurement/requests/${id}/approve`, { comments: 'Approved via console' }); toast.success('Approved'); load(); } catch {} };
   const reject = async (id) => { try { await api.post(`/procurement/requests/${id}/reject`, { comments: 'Rejected via console' }); toast('Rejected'); load(); } catch {} };
+  const deleteRequest = async (requestId) => {
+    try {
+      await api.delete(`/procurement/requests/${requestId}`);
+      setRequests(requests.filter(r => r.id !== requestId));
+      toast.success('Request deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete request');
+    }
+  };
+  const deleteOrder = async (orderId) => {
+    try {
+      await api.delete(`/procurement/orders/${orderId}`);
+      setOrders(orders.filter(o => o.id !== orderId));
+      toast.success('Order deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete order');
+    }
+  };
 
   return (
     <>
@@ -68,6 +87,7 @@ export default function ProcurementPage() {
                         <button className="btn-outline text-xs" onClick={() => approve(r.id)}>Approve</button>
                         <button className="btn-outline text-xs" onClick={() => reject(r.id)}>Reject</button>
                       </>)}
+                      <button className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => deleteRequest(r.id)}><DeleteOutline fontSize="small" /></button>
                     </td>
                   </tr>
                 ))}
@@ -82,7 +102,7 @@ export default function ProcurementPage() {
           {orders.length === 0 ? <p className="text-sm text-ink-500 dark:text-ink-300">No POs raised yet.</p> : (
             <table className="min-w-full"><thead><tr>
               <th className="table-th">PO no.</th><th className="table-th">Supplier</th><th className="table-th">Total</th>
-              <th className="table-th">Status</th><th className="table-th">Issued on</th>
+              <th className="table-th">Status</th><th className="table-th">Issued on</th><th className="table-th">Actions</th>
             </tr></thead><tbody>
               {orders.map((o) => (
                 <tr key={o.id}>
@@ -91,6 +111,7 @@ export default function ProcurementPage() {
                   <td className="table-td">₹ {Number(o.totalAmount).toLocaleString('en-IN')}</td>
                   <td className="table-td"><StatusChip value={o.status} palette={STATUS_PALETTE} /></td>
                   <td className="table-td">{o.issuedOn}</td>
+                  <td className="table-td"><button className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => deleteOrder(o.id)}><DeleteOutline fontSize="small" /></button></td>
                 </tr>
               ))}
             </tbody></table>
