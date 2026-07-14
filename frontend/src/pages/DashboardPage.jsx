@@ -5,6 +5,7 @@ import {
 
 import { api } from '../app/apiClient';
 import { PageHeader, StatCard, Section, LoadingState } from '../components/ui/Primitives';
+import PhotoCarousel from '../components/PhotoCarousel';
 
 const STATUS_COLORS = {
   PLANNED: '#94a1c0',
@@ -44,6 +45,10 @@ export default function DashboardPage() {
         subtitle="Home"
         title="Programme cockpit"
       />
+
+      <div className="mb-8">
+        <PhotoCarousel />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         <StatCard label="Active projects" value={summary.totalProjects} hint={`${summary.projectsByStatus?.IN_PROGRESS || 0} in progress`} tone="accent" />
