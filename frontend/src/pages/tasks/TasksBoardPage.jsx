@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -58,6 +59,16 @@ export default function TasksBoardPage() {
     } catch { /* handled */ }
   };
 
+  const deleteTask = async (taskId) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+      setTasks(tasks.filter(t => t.id !== taskId));
+      toast.success('Task deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete task');
+    }
+  };
+
   if (!tasks) return <LoadingState />;
   const grouped = COLUMNS.reduce((acc, col) => ({ ...acc, [col]: tasks.filter((t) => t.status === col) }), {});
 
@@ -88,9 +99,14 @@ export default function TasksBoardPage() {
                   <div className="text-sm font-semibold">{t.title}</div>
                   <div className="flex justify-between items-center mt-2 text-xs">
                     <span className={`chip ${COLUMN_COLORS[t.status]}`}>{t.priority}</span>
-                    <select className="text-xs bg-transparent focus:outline-none" value={t.status} onChange={(e) => moveTask(t, e.target.value)}>
-                      {COLUMNS.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <div className="flex gap-2 items-center">
+                      <select className="text-xs bg-transparent focus:outline-none" value={t.status} onChange={(e) => moveTask(t, e.target.value)}>
+                        {COLUMNS.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                      <button onClick={() => deleteTask(t.id)} className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors" title="Delete task">
+                        <DeleteOutline fontSize="small" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
