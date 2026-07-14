@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -22,6 +23,16 @@ export default function EquipmentPage() {
     e.preventDefault();
     try { await api.post('/equipment', form); toast.success('Registered'); load(); }
     catch {}
+  };
+
+  const deleteEquipment = async (equipId) => {
+    try {
+      await api.delete(`/equipment/${equipId}`);
+      setRows(rows.filter(e => e.id !== equipId));
+      toast.success('Equipment deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete equipment');
+    }
   };
 
   return (
@@ -51,6 +62,7 @@ export default function EquipmentPage() {
               <th className="table-th">Location</th>
               <th className="table-th">Next calibration</th>
               <th className="table-th">Status</th>
+              <th className="table-th">Actions</th>
             </tr></thead>
             <tbody>
               {rows.map((e) => (
@@ -61,6 +73,7 @@ export default function EquipmentPage() {
                   <td className="table-td">{e.laboratoryLocation || '—'}</td>
                   <td className="table-td">{e.nextCalibrationDate || '—'}</td>
                   <td className="table-td"><StatusChip value={e.status} palette={STATUS_PALETTE} /></td>
+                  <td className="table-td"><button onClick={() => deleteEquipment(e.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></td>
                 </tr>
               ))}
             </tbody>
