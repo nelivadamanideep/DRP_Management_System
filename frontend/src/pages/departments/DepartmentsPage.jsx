@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AddCircleOutline } from '@mui/icons-material';
+import { AddCircleOutline, DeleteOutline } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 import { api } from '../../app/apiClient';
@@ -17,6 +17,16 @@ export default function DepartmentsPage() {
     catch {}
   };
 
+  const deleteDepartment = async (deptId) => {
+    try {
+      await api.delete(`/departments/${deptId}`);
+      setRows(rows.filter(d => d.id !== deptId));
+      toast.success('Department deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete department');
+    }
+  };
+
   return (
     <>
       <PageHeader subtitle="Organisation" title="Departments" />
@@ -32,7 +42,7 @@ export default function DepartmentsPage() {
       {!rows ? <LoadingState /> : (
         <Section title="Registered departments">
           <table className="min-w-full">
-            <thead><tr><th className="table-th">Code</th><th className="table-th">Name</th><th className="table-th">Description</th><th className="table-th">Active</th></tr></thead>
+            <thead><tr><th className="table-th">Code</th><th className="table-th">Name</th><th className="table-th">Description</th><th className="table-th">Active</th><th className="table-th">Actions</th></tr></thead>
             <tbody>
               {rows.map((d) => (
                 <tr key={d.id}>
@@ -40,6 +50,7 @@ export default function DepartmentsPage() {
                   <td className="table-td">{d.name}</td>
                   <td className="table-td text-ink-500 dark:text-ink-300">{d.description}</td>
                   <td className="table-td">{d.active ? '✅' : '⛔️'}</td>
+                  <td className="table-td"><button onClick={() => deleteDepartment(d.id)} className="btn-outline text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"><DeleteOutline fontSize="small" /></button></td>
                 </tr>
               ))}
             </tbody>
